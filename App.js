@@ -8,14 +8,14 @@ import { NavigationContainer } from '@react-navigation/native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 
-import Home from './screens/Home'
-import List from './screens/List'
-import ProductForm from './screens/ProductForm'
-import Notifications from './screens/Notifications'
-import Settings from './screens/Settings'
+import Home from './src/screens/Home'
+import Menu from './src/screens/Menu'
+import ProductForm from './src/screens/ProductForm'
+import Notifications from './src/screens/Notifications'
+import Settings from './src/screens/Settings'
 
 import { Provider } from 'react-redux'
-import store from './store'
+import store from './src/store'
 
 const { Navigator, Screen } = createBottomTabNavigator()
 
@@ -32,7 +32,7 @@ export default function App() {
                                 case 'Home':
                                     iconName = 'home'
                                     break
-                                case 'List':
+                                case 'Menu':
                                     iconName = 'list'
                                     break
                                 case 'ProductForm':
@@ -65,7 +65,7 @@ export default function App() {
                     }}
                 >
                     <Screen name="Home" component={Home} />
-                    <Screen name="List" component={List} />
+                    <Screen name="Menu" component={Menu} />
                     <Screen
                         name="ProductForm"
                         component={ProductForm}
