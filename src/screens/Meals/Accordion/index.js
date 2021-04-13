@@ -14,78 +14,72 @@ import {
     AccordionTitle,
     AccordionIcon,
     AccordionContent,
-    AccordionItem,
     AccordionOption,
     Container,
     TextStyled,
     OptionButton,
 } from './styles.js'
+import AccordionItem from '../AccordionItem'
 
-function Accordion({ title, dataMealsTreated }) {
-    const plans = useSelector((state) => state.mealsplans.data)
+function Accordion({ meal }) {
+    // const plans = useSelector((state) => state.mealsplans.data)
 
     const [toggleAccordion, setToggleAccordion] = useState(false)
-    const [dataMealsTreatedEach, setDataMealsTreatedEach] = useState()
+    const [isPae, setIsPae] = useState(false)
+    const [optionsMeal, setOptionsMeal] = useState([])
+    const [selectedOptionMeal, setSelectedOptionMeal] = useState({})
 
-    // Init dataMealsTreatedEach with the first
-    // element of dataMealsTreated array
     useEffect(() => {
-        setDataMealsTreatedEach(
-            dataMealsTreated[0].plano_alimentar_refeicao_alimentos
-        )
+        console.log('meal: ', meal)
+        if (meal.plano_alimentar_refeicao_alimentos) setIsPae(false)
+        if (meal.pae_refeicao_alimentos) setIsPae(true)
+        setOptionsMealFunction()
+        setSelectedOptionMeal(meal)
     }, [])
 
-    function showDataConsole() {
-        // console.log('dataFoodsSubstitutes:', dataMealsTreated)
-        // dataMealsTreated.map((item) => console.log(item.nome))
-        dataMealsTreated.map((item) => {
-            if (item.plano_alimentar_refeicao_alimentos)
-                item.plano_alimentar_refeicao_alimentos.map((alimento) => {
-                    // console.log(alimento.nome)
-                })
-            if (item.pa_refeicao_substituta_alimentos)
-                item.pa_refeicao_substituta_alimentos.map((alimento) => {
-                    // console.log(alimento.nome)
-                })
-        })
+    useEffect(() => {
+        // console.log('optionsMeal: ', optionsMeal)
+        // console.log('selectedOptionMeal: ', selectedOptionMeal)
+    }, [optionsMeal, selectedOptionMeal])
+
+    function setOptionsMealFunction() {
+        setOptionsMeal([meal, ...meal.pa_refeicao_substituta])
     }
 
-    function updateOptionMeal(foodSubstituteOption) {
-        if (foodSubstituteOption.plano_alimentar_refeicao_alimentos)
-            setDataMealsTreatedEach([
-                ...foodSubstituteOption.plano_alimentar_refeicao_alimentos,
-            ])
+    function updateSelectedOptionMeal(optionMeal) {
+        if (isPae) return
 
-        if (foodSubstituteOption.pa_refeicao_substituta_alimentos)
-            setDataMealsTreatedEach([
-                ...foodSubstituteOption.pa_refeicao_substituta_alimentos,
-            ])
-
-        // console.log('foodSubstitute :', foodSubstituteOption.id)
+        console.log('optionMeal:::', optionMeal)
+        setSelectedOptionMeal(optionMeal)
     }
 
     return (
-        <Container>
-            <AccordionTitle
-                onPress={() => setToggleAccordion(!toggleAccordion)}
-            >
-                <Text style={{ color: 'black' }}>{title}</Text>
-                {!toggleAccordion && (
-                    <AccordionIcon style={{ color: 'black' }}>+</AccordionIcon>
-                )}
-                {toggleAccordion && (
-                    <AccordionIcon style={{ color: 'black' }}>-</AccordionIcon>
-                )}
-            </AccordionTitle>
-            <AccordionOption>
-                {toggleAccordion &&
-                    dataMealsTreated.length > 1 &&
-                    dataMealsTreated.map((foodSubstituteOption, index) => {
+        <>
+            <Container>
+                <AccordionTitle
+                    onPress={() => setToggleAccordion(!toggleAccordion)}
+                >
+                    <Text style={{ color: 'black' }}>{meal.nome}</Text>
+                    {!toggleAccordion && (
+                        <AccordionIcon style={{ color: 'black' }}>
+                            +
+                        </AccordionIcon>
+                    )}
+                    {toggleAccordion && (
+                        <AccordionIcon style={{ color: 'black' }}>
+                            -
+                        </AccordionIcon>
+                    )}
+                </AccordionTitle>
+            </Container>
+            {!isPae && toggleAccordion && optionsMeal.length > 1 && (
+                <AccordionOption>
+                    {optionsMeal.map((optionMeal, index) => {
                         return (
                             <OptionButton
-                                key={foodSubstituteOption.id}
+                                key={optionMeal.id}
                                 onPress={() => {
-                                    updateOptionMeal(foodSubstituteOption)
+                                    updateSelectedOptionMeal(optionMeal)
                                 }}
                             >
                                 <Text
@@ -99,19 +93,26 @@ function Accordion({ title, dataMealsTreated }) {
                             </OptionButton>
                         )
                     })}
-            </AccordionOption>
-            <AccordionContent>
-                {toggleAccordion &&
-                    dataMealsTreatedEach.map((alimento) => {
+                </AccordionOption>
+            )}
+
+            {toggleAccordion && (
+                <AccordionContent>
+                    {(
+                        selectedOptionMeal.plano_alimentar_refeicao_alimentos ||
+                        selectedOptionMeal.pa_refeicao_substituta_alimentos
+                    ).map((alimento) => {
                         // console.log('alimento: ', alimento)
                         return (
-                            <AccordionItem key={alimento.id}>
-                                <Text>{alimento.nome}</Text>
-                            </AccordionItem>
+                            <AccordionItem
+                                key={alimento.id}
+                                alimento={alimento.nome}
+                            />
                         )
                     })}
-            </AccordionContent>
-        </Container>
+                </AccordionContent>
+            )}
+        </>
     )
 }
 

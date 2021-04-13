@@ -105,7 +105,8 @@ function MenuScreen({ navigation }) {
             {!isBusy && (
                 <List
                     data={plansf.plans}
-                    keyExtractor={(item, index) => item.id}
+                    // keyExtractor={(item, index) => item.id}
+                    keyExtractor={(item, index) => String(index)}
                     onRefresh={loadMenu}
                     refreshing={isBusy}
                     renderItem={({ item, index }) => (

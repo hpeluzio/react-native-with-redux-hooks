@@ -5,17 +5,25 @@ import {
     View,
     SafeAreaView,
     TouchableOpacity,
+    FlatList,
 } from 'react-native'
 import styled from 'styled-components'
 
-export const Container = styled.SafeAreaView`
+export const Container = styled.View`
     flex: 1;
     background-color: grey;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center; */
     padding-top: 10%;
-    /* width: 100%;
-    height: 100%; */
+    width: 100%;
+    /* height: 100%; */
+`
+export const List = styled(FlatList)`
+    flex: 1;
+    /* flex-grow: 1; */
+    background: blue;
+    width: 100%;
+    height: 50%;
 `
 
 export const TextStyled = styled.Text`
