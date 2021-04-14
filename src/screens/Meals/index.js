@@ -12,20 +12,24 @@ import MenuService from '~/services/MenuService'
 import MealsService from '~/services/MealsService'
 import { useSelector, useDispatch } from 'react-redux'
 import { Feather as Icon } from '@expo/vector-icons'
-import { Button, Container, TextStyled, List } from './styles.js'
+import {
+    Button,
+    Container,
+    TextStyled,
+    List,
+    FooterContent,
+    Orientation,
+    OrientationIcon,
+    ShoppingList,
+    ShoppingListIcon,
+} from './styles.js'
 
 import { setMenu } from '~/store/actions/menu/menuActions'
 
-import Accordion from './Accordion'
-
-// const wait = (timeout) => {
-//     return new Promise((resolve) => setTimeout(resolve, timeout))
-// }
+import AccordionMeal from './AccordionMeal'
 
 function Meals({ navigation, route }) {
-    const [isBusy, setIsBusy] = useState(true)
     const [loading, setLoading] = useState(false)
-    const [refreshing, setRefreshing] = React.useState(false)
     const data = useSelector((state) => state.mealsplans.data)
 
     const [plan, setPlan] = useState({})
@@ -38,22 +42,17 @@ function Meals({ navigation, route }) {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTMzMywiaWF0IjoxNjE3NTQ1NjYwfQ.-2g_Pv3DcxBUVIir2NB0NwSYMbzLX0dn44MwT6JrqCI'
     )
 
-    const onRefresh = useCallback(async () => {
-        setRefreshing(true)
-        console.log('Refreshing')
-        // await setTimeout(() => {
-        //     console.log('Hello')
-        //     setRefreshing(false)
-        // }, 2000)
+    const onRefresh = useCallback(() => {
+        console.log('Loading meals')
+        setLoading(true)
         loadMeals(plan).then(() => {
-            setRefreshing(false)
-            console.log('setRefreshing(false)')
+            console.log('Meals loaded')
+            setLoading(false)
         })
-        // wait(500).then(() => setRefreshing(false))
-    }, [])
+    }, [loading, meals])
 
     useEffect(() => {
-        // console.log('route.params.item: ', route.params.item)
+        console.log('route.params.item: ', route.params.item)
         let _item = route.params.item
         if (_item) setPlan(_item)
         loadMeals(_item)
@@ -73,29 +72,11 @@ function Meals({ navigation, route }) {
         console.log('meals::::: ', meals)
     }, [meals])
 
-    const mealSelected = useCallback(({ item }) => {
-        setMeal(item)
-
-        if (item.pa_refeicao_substituta) {
-            setLoading(true)
-            let arrSubstitute = []
-            item.pa_refeicao_substituta.map((refeicao_substituta, index) => {
-                // console.log(refeicao_substituta);
-                if (
-                    refeicao_substituta.pa_refeicao_substituta_alimentos.length
-                ) {
-                    arrSubstitute.push(
-                        refeicao_substituta.pa_refeicao_substituta_alimentos
-                    )
-                }
-            })
-
-            setSubstituteMeals(arrSubstitute)
-            setSubstituteMeal(item)
-            setLoading(false)
-        }
-        setShow(false)
-    }, [])
+    // async function wait(ms) {
+    //     return new Promise((resolve) => {
+    //         setTimeout(resolve, ms)
+    //     })
+    // }
 
     const loadMeals = useCallback(
         async (_plan) => {
@@ -106,12 +87,16 @@ function Meals({ navigation, route }) {
             // console.log('loadMeals...')
             // console.log('_plan...', _plan)
 
-            setIsBusy(true)
             setLoading(true)
+
             try {
                 let _response = null
 
+                //Promise teste para testar o refresh control - loading
+                // await wait(3000)
+
                 if (_plan.pae) {
+                    console.log('!!!!!!!!!!!!!!!! _plan.pae')
                     _response = await MealsService.getPae({
                         token,
                         id: _plan.id,
@@ -165,17 +150,18 @@ function Meals({ navigation, route }) {
                     }
 
                     setMeals(_meals)
-                    if (_meals && _meals.length) {
-                        mealSelected({ item: _meals[0] })
-                    }
+
+                    // if (_meals && _meals.length) {
+                    //     mealSelected({ item: _meals[0] })
+                    // }
                 }
-            } catch (error) {
-            } finally {
-                setIsBusy(false)
-                setLoading(false)
-            }
+            } catch (error) {}
+            setLoading(false)
         },
-        [mealSelected, token /*, user*/]
+        [
+            /*mealSelected, token, user*/
+            plan,
+        ]
     )
 
     function showData() {
@@ -187,6 +173,7 @@ function Meals({ navigation, route }) {
         // Concat
         // plans -> plano_alimentar_refeicaos[]
         // plans -> plano_alimentar_refeicaos[1].pa_refeicao_substituta: []
+        // console.log('[meal, ...substituteMeals] ', [meal, ...substituteMeals])
         return [meal, ...substituteMeals]
     }
 
@@ -203,7 +190,7 @@ function Meals({ navigation, route }) {
                     style={{ width: '100%' }}
                     refreshControl={
                         <RefreshControl
-                            refreshing={refreshing}
+                            refreshing={loading}
                             onRefresh={onRefresh}
                         />
                     }
@@ -218,12 +205,34 @@ function Meals({ navigation, route }) {
                     renderItem={({ item, index }) => <Accordion meal={item} />}
                 /> */}
 
-                    {meals.map((meal) => {
-                        return <Accordion meal={meal} />
-                    })}
+                    {meals.length == 0 && (
+                        <View>
+                            <Text>Não há refeições</Text>
+                        </View>
+                    )}
+
+                    {meals.length > 0 &&
+                        meals.map((meal) => {
+                            return <AccordionMeal key={meal.id} meal={meal} />
+                        })}
 
                     {/* <Button onPress={showData} /> */}
-                    {/* {isBusy && <Text>Loading</Text>} */}
+                    {loading && <Text>Loading</Text>}
+
+                    <FooterContent>
+                        <Orientation>
+                            <OrientationIcon
+                                source={require('~/images/ic_orientation.png')}
+                            />
+                            <Text>Lista de Compras</Text>
+                        </Orientation>
+                        <ShoppingList>
+                            <ShoppingListIcon
+                                source={require('~/images/ic_orientation.png')}
+                            />
+                            <Text>Orientações</Text>
+                        </ShoppingList>
+                    </FooterContent>
                 </ScrollView>
             </Container>
         )

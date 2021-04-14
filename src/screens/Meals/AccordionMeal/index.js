@@ -20,8 +20,9 @@ import {
     OptionButton,
 } from './styles.js'
 import AccordionItem from '../AccordionItem'
+import AccordionSubstitute from '../AccordionSubstitute'
 
-function Accordion({ meal }) {
+function AccordionMeal({ meal }) {
     // const plans = useSelector((state) => state.mealsplans.data)
 
     const [toggleAccordion, setToggleAccordion] = useState(false)
@@ -30,7 +31,7 @@ function Accordion({ meal }) {
     const [selectedOptionMeal, setSelectedOptionMeal] = useState({})
 
     useEffect(() => {
-        console.log('meal: ', meal)
+        console.log('Acordion Meal - meal: ', meal)
         if (meal.plano_alimentar_refeicao_alimentos) setIsPae(false)
         if (meal.pae_refeicao_alimentos) setIsPae(true)
         setOptionsMealFunction()
@@ -49,7 +50,6 @@ function Accordion({ meal }) {
     function updateSelectedOptionMeal(optionMeal) {
         if (isPae) return
 
-        console.log('optionMeal:::', optionMeal)
         setSelectedOptionMeal(optionMeal)
     }
 
@@ -102,11 +102,15 @@ function Accordion({ meal }) {
                         selectedOptionMeal.plano_alimentar_refeicao_alimentos ||
                         selectedOptionMeal.pa_refeicao_substituta_alimentos
                     ).map((alimento) => {
-                        // console.log('alimento: ', alimento)
+                        // console.log('alimento item :::', alimento)
                         return (
-                            <AccordionItem
+                            // <AccordionItem
+                            //     key={alimento.id}
+                            //     alimento={alimento.nome}
+                            // />
+                            <AccordionSubstitute
                                 key={alimento.id}
-                                alimento={alimento.nome}
+                                alimento={alimento}
                             />
                         )
                     })}
@@ -116,4 +120,4 @@ function Accordion({ meal }) {
     )
 }
 
-export default Accordion
+export default AccordionMeal
