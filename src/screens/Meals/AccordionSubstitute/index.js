@@ -23,8 +23,9 @@ function AccordionSubstitute({ alimento }) {
 
     //RENDERIZACAO SEM CONDICIONAL
     //USANDO O MECANISMO DE 'OU' É FEITO A TRANSICAO
-    // TANTO DE ALIMENTO DA REFEICAO POR ALIMENTO
+    //TANTO DE ALIMENTO DA REFEICAO POR ALIMENTO
     //QUANTO A REFEICAO POR EQUIVALENTES
+
     return (
         <>
             <Container>
@@ -45,6 +46,10 @@ function AccordionSubstitute({ alimento }) {
                         </AccordionIcon>
                     )}
                 </AccordionTitle>
+                <Text>
+                    {alimento.quantidade_medida || alimento.quantidade}{' '}
+                    {alimento.medida_caseira}- [{alimento.gramas}]g
+                </Text>
             </Container>
 
             {toggleAccordion &&
@@ -58,6 +63,12 @@ function AccordionSubstitute({ alimento }) {
                             <Text>
                                 {subEach.nome_alimento ||
                                     subEach.descricao_dos_alimentos}
+                            </Text>
+                            <Text>
+                                {subEach.quantidade || subEach.unidade}{' '}
+                                {subEach.medidas_caseiras ||
+                                    subEach.medida_caseira_equivalente}{' '}
+                                - [{subEach.gramas || subEach.gramas_unidade}]g
                             </Text>
                         </AccordionContent>
                     )

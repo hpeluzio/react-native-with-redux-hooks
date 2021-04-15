@@ -11,6 +11,7 @@ import styled from 'styled-components'
 export const Container = styled.View`
     flex: 1;
     /* align-items: center; */
+    flex-direction: column;
     justify-content: center;
     /* width: 100%;
     height: 100%; */
