@@ -19,105 +19,138 @@ import {
     TextStyled,
     OptionButton,
 } from './styles.js'
-import AccordionItem from '../AccordionItem'
+
 import AccordionSubstitute from '../AccordionSubstitute'
 
 function AccordionMeal({ meal }) {
-    // const plans = useSelector((state) => state.mealsplans.data)
-
+    //TOGGLE DO ACCORDION
     const [toggleAccordion, setToggleAccordion] = useState(false)
-    const [isPae, setIsPae] = useState(false)
+
+    //VERIFICANDO SE A REFEICAO EH POR ALIMENTO OU EQUIVALENTE
+    const [isPae, setIsPae] = useState(
+        meal.pae_refeicao_alimentos ? true : false
+    )
+
+    //OPCOES DE REFEICAO DO USUARIO
     const [optionsMeal, setOptionsMeal] = useState([])
-    const [selectedOptionMeal, setSelectedOptionMeal] = useState({})
+
+    //REFEICAO SELECIONADA DO USUARIO
+    //A PRIMEIRA REFEICAO SERA SEMPRE A PRIMEIRA - useState(meal)
+    const [selectedOptionMeal, setSelectedOptionMeal] = useState(meal)
 
     useEffect(() => {
-        console.log('Acordion Meal - meal: ', meal)
-        if (meal.plano_alimentar_refeicao_alimentos) setIsPae(false)
-        if (meal.pae_refeicao_alimentos) setIsPae(true)
-        setOptionsMealFunction()
-        setSelectedOptionMeal(meal)
+        //SETANDO A OPCAO ESCOLHIDA PELO USUARIO
+        //CASO O PLANO SEJA POR ALIMENTO
+        if (!isPae) {
+            setOptionsMeal([meal, ...meal.pa_refeicao_substituta])
+        }
     }, [])
 
-    useEffect(() => {
-        // console.log('optionsMeal: ', optionsMeal)
-        // console.log('selectedOptionMeal: ', selectedOptionMeal)
-    }, [optionsMeal, selectedOptionMeal])
+    //RENDER
+    //REFEICAO PLANO ALIMENTO EQUIVALENTE
+    if (isPae)
+        return (
+            <>
+                <Container>
+                    <AccordionTitle
+                        onPress={() => setToggleAccordion(!toggleAccordion)}
+                    >
+                        <Text style={{ color: 'black' }}>{meal.nome}</Text>
+                        {!toggleAccordion && (
+                            <AccordionIcon style={{ color: 'black' }}>
+                                +
+                            </AccordionIcon>
+                        )}
+                        {toggleAccordion && (
+                            <AccordionIcon style={{ color: 'black' }}>
+                                -
+                            </AccordionIcon>
+                        )}
+                    </AccordionTitle>
+                </Container>
+                {/* <View>
+                    {isPae ? <Text>Pae: true </Text> : <Text>Pae: false</Text>}
+                </View> */}
 
-    function setOptionsMealFunction() {
-        setOptionsMeal([meal, ...meal.pa_refeicao_substituta])
-    }
+                {toggleAccordion && (
+                    <AccordionContent>
+                        {meal.pae_refeicao_alimentos.map((alimento) => {
+                            return (
+                                <AccordionSubstitute
+                                    key={alimento.id}
+                                    alimento={alimento}
+                                />
+                            )
+                        })}
+                    </AccordionContent>
+                )}
+            </>
+        )
+    // REFEICAO POR ALIMENTO
+    else
+        return (
+            <>
+                <Container>
+                    <AccordionTitle
+                        onPress={() => setToggleAccordion(!toggleAccordion)}
+                    >
+                        <Text style={{ color: 'black' }}>{meal.nome}</Text>
+                        {!toggleAccordion && (
+                            <AccordionIcon style={{ color: 'black' }}>
+                                +
+                            </AccordionIcon>
+                        )}
+                        {toggleAccordion && (
+                            <AccordionIcon style={{ color: 'black' }}>
+                                -
+                            </AccordionIcon>
+                        )}
+                    </AccordionTitle>
+                </Container>
 
-    function updateSelectedOptionMeal(optionMeal) {
-        if (isPae) return
-
-        setSelectedOptionMeal(optionMeal)
-    }
-
-    return (
-        <>
-            <Container>
-                <AccordionTitle
-                    onPress={() => setToggleAccordion(!toggleAccordion)}
-                >
-                    <Text style={{ color: 'black' }}>{meal.nome}</Text>
-                    {!toggleAccordion && (
-                        <AccordionIcon style={{ color: 'black' }}>
-                            +
-                        </AccordionIcon>
-                    )}
-                    {toggleAccordion && (
-                        <AccordionIcon style={{ color: 'black' }}>
-                            -
-                        </AccordionIcon>
-                    )}
-                </AccordionTitle>
-            </Container>
-            {!isPae && toggleAccordion && optionsMeal.length > 1 && (
-                <AccordionOption>
-                    {optionsMeal.map((optionMeal, index) => {
-                        return (
-                            <OptionButton
-                                key={optionMeal.id}
-                                onPress={() => {
-                                    updateSelectedOptionMeal(optionMeal)
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        fontWeight: 'bold',
-                                        color: 'white',
+                {/* OPCOES DE ALIMENTO DO USUARIO */}
+                {!isPae && toggleAccordion && optionsMeal.length > 1 && (
+                    <AccordionOption>
+                        {optionsMeal.map((optionMeal, index) => {
+                            return (
+                                <OptionButton
+                                    key={optionMeal.id}
+                                    onPress={() => {
+                                        //SETANDO A OPCAO SELECIONADA DO USUARIO
+                                        setSelectedOptionMeal(optionMeal)
                                     }}
                                 >
-                                    Opção {index + 1}
-                                </Text>
-                            </OptionButton>
-                        )
-                    })}
-                </AccordionOption>
-            )}
+                                    <Text
+                                        style={{
+                                            fontWeight: 'bold',
+                                            color: 'white',
+                                        }}
+                                    >
+                                        Opção {index + 1}
+                                    </Text>
+                                </OptionButton>
+                            )
+                        })}
+                    </AccordionOption>
+                )}
 
-            {toggleAccordion && (
-                <AccordionContent>
-                    {(
-                        selectedOptionMeal.plano_alimentar_refeicao_alimentos ||
-                        selectedOptionMeal.pa_refeicao_substituta_alimentos
-                    ).map((alimento) => {
-                        // console.log('alimento item :::', alimento)
-                        return (
-                            // <AccordionItem
-                            //     key={alimento.id}
-                            //     alimento={alimento.nome}
-                            // />
-                            <AccordionSubstitute
-                                key={alimento.id}
-                                alimento={alimento}
-                            />
-                        )
-                    })}
-                </AccordionContent>
-            )}
-        </>
-    )
+                {toggleAccordion && (
+                    <AccordionContent>
+                        {(
+                            selectedOptionMeal.plano_alimentar_refeicao_alimentos ||
+                            selectedOptionMeal.pa_refeicao_substituta_alimentos
+                        ).map((alimento) => {
+                            return (
+                                <AccordionSubstitute
+                                    key={alimento.id}
+                                    alimento={alimento}
+                                />
+                            )
+                        })}
+                    </AccordionContent>
+                )}
+            </>
+        )
 }
 
 export default AccordionMeal

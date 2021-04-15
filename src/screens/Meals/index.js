@@ -42,61 +42,38 @@ function Meals({ navigation, route }) {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTMzMywiaWF0IjoxNjE3NTQ1NjYwfQ.-2g_Pv3DcxBUVIir2NB0NwSYMbzLX0dn44MwT6JrqCI'
     )
 
+    //Refresh Control da screen meals
     const onRefresh = useCallback(() => {
-        console.log('Loading meals')
         setLoading(true)
         loadMeals(plan).then(() => {
-            console.log('Meals loaded')
             setLoading(false)
         })
     }, [loading, meals])
 
     useEffect(() => {
-        console.log('route.params.item: ', route.params.item)
+        //Pegando o _item enviado por parametro da screen meals
         let _item = route.params.item
+
         if (_item) setPlan(_item)
+
+        //Carrega as meals da API
         loadMeals(_item)
-
-        // console.log('Object.keys(plan).length:  ', Object.keys(plan).length)
-
-        // console.log('plan: ', plan)
-        // console.log('data.plans[0]: ', data.plans[0])
-        // console.log('route.params: ', route.params.item)
     }, [])
 
-    useEffect(() => {
-        console.log('plan: ', plan)
-    }, [plan])
-
-    useEffect(() => {
-        console.log('meals::::: ', meals)
-    }, [meals])
-
-    // async function wait(ms) {
-    //     return new Promise((resolve) => {
-    //         setTimeout(resolve, ms)
-    //     })
-    // }
-
+    //Chamada da API
     const loadMeals = useCallback(
         async (_plan) => {
             if (!_plan || !_plan.id) {
                 return
             }
 
-            // console.log('loadMeals...')
-            // console.log('_plan...', _plan)
-
             setLoading(true)
 
             try {
                 let _response = null
 
-                //Promise teste para testar o refresh control - loading
-                // await wait(3000)
-
+                //Verifcando se o _item recebido é plano equivalente ou por alimento
                 if (_plan.pae) {
-                    console.log('!!!!!!!!!!!!!!!! _plan.pae')
                     _response = await MealsService.getPae({
                         token,
                         id: _plan.id,
@@ -107,12 +84,13 @@ function Meals({ navigation, route }) {
                         token,
                         id: _plan.id,
                     })
-                    // console.log('_response.status...', _response.status)
                 }
 
+                //Checa a resposta
                 if (_response.status === 200) {
                     const { plan: planData } = _response.data
 
+                    //Ordenando as refeicoes por alimento
                     let _meals =
                         planData.plano_alimentar_refeicaos ||
                         planData.pae_refeicaos
@@ -133,6 +111,7 @@ function Meals({ navigation, route }) {
                         })
                     }
 
+                    //Ordenando as refeicoes por equivalentes
                     if (planData.pae_refeicaos) {
                         _meals = _meals.sort((mealA, mealB) => {
                             if (
@@ -150,32 +129,12 @@ function Meals({ navigation, route }) {
                     }
 
                     setMeals(_meals)
-
-                    // if (_meals && _meals.length) {
-                    //     mealSelected({ item: _meals[0] })
-                    // }
                 }
             } catch (error) {}
             setLoading(false)
         },
-        [
-            /*mealSelected, token, user*/
-            plan,
-        ]
+        [plan]
     )
-
-    function showData() {
-        // console.log('showData')
-        // console.log('showData plansf: ', plansf)
-    }
-
-    function dataTreatment(meal, substituteMeals) {
-        // Concat
-        // plans -> plano_alimentar_refeicaos[]
-        // plans -> plano_alimentar_refeicaos[1].pa_refeicao_substituta: []
-        // console.log('[meal, ...substituteMeals] ', [meal, ...substituteMeals])
-        return [meal, ...substituteMeals]
-    }
 
     if (Object.keys(plan).length === 0)
         return (
@@ -195,16 +154,6 @@ function Meals({ navigation, route }) {
                         />
                     }
                 >
-                    {/* <Text>Meals</Text> */}
-                    {/* {data.plans[0].plano_alimentar_refeicaos.map((par) => { */}
-                    {/* <List
-                    data={meals}
-                    keyExtractor={(item, index) => String(index)}
-                    onRefresh={loadMeals}
-                    refreshing={isBusy}
-                    renderItem={({ item, index }) => <Accordion meal={item} />}
-                /> */}
-
                     {meals.length == 0 && (
                         <View>
                             <Text>Não há refeições</Text>
@@ -216,7 +165,6 @@ function Meals({ navigation, route }) {
                             return <AccordionMeal key={meal.id} meal={meal} />
                         })}
 
-                    {/* <Button onPress={showData} /> */}
                     {loading && <Text>Loading</Text>}
 
                     <FooterContent>

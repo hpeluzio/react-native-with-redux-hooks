@@ -79,39 +79,3 @@ export const OptionButton = styled.TouchableOpacity`
     /* margin-bottom: 10px; */
     /* color: white; */
 `
-
-export const FooterContent = styled.View`
-    flex: 1;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    /* min-height: 20px; */
-    height: 80px;
-    /* padding-bottom: 1%; */
-`
-export const Orientation = styled.TouchableOpacity`
-    align-items: center;
-    justify-content: center;
-    height: 60px;
-    padding: 10px;
-    /* background: white; */
-`
-
-export const OrientationIcon = styled.Image`
-    height: 30px;
-    width: 30px;
-`
-
-export const ShoppingList = styled.TouchableOpacity`
-    align-items: center;
-    justify-content: center;
-    height: 60px;
-    padding: 10px;
-    /* background: white; */
-`
-
-export const ShoppingListIcon = styled.Image`
-    height: 30px;
-    width: 30px;
-`

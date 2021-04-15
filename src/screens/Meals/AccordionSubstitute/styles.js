@@ -42,7 +42,7 @@ export const AccordionIcon = styled.Text`
 
 export const AccordionContent = styled.View`
     flex: 1;
-    background: red;
+    background: #4682b4;
     align-items: flex-start;
     justify-content: center;
     /* height: auto; */

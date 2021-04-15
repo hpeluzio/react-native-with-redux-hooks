@@ -16,24 +16,24 @@ import {
     AccordionContent,
     Container,
 } from './styles.js'
-import AccordionItem from '../AccordionItem'
 
 function AccordionSubstitute({ alimento }) {
-    // const plans = useSelector((state) => state.mealsplans.data)
-
+    //TOGGLE DO ACORDION
     const [toggleAccordion, setToggleAccordion] = useState(false)
 
-    // useEffect(() => {
-    //     console.log('alimento: ', alimento)
-    // }, [])
-
+    //RENDERIZACAO SEM CONDICIONAL
+    //USANDO O MECANISMO DE 'OU' É FEITO A TRANSICAO
+    // TANTO DE ALIMENTO DA REFEICAO POR ALIMENTO
+    //QUANTO A REFEICAO POR EQUIVALENTES
     return (
         <>
             <Container>
                 <AccordionTitle
                     onPress={() => setToggleAccordion(!toggleAccordion)}
                 >
-                    <Text style={{ color: 'black' }}>{alimento.nome}</Text>
+                    <Text style={{ color: 'blue', backgroundColor: 'yellow' }}>
+                        {alimento.nome}
+                    </Text>
                     {!toggleAccordion && (
                         <AccordionIcon style={{ color: 'black' }}>
                             +
@@ -50,11 +50,15 @@ function AccordionSubstitute({ alimento }) {
             {toggleAccordion &&
                 (
                     alimento.plano_alimentar_alimento_equivalentes ||
-                    alimento.pa_refeicao_substituta_alimento_equivalentes
+                    alimento.pa_refeicao_substituta_alimento_equivalentes ||
+                    alimento.pae_alimento_equivalentes
                 ).map((subEach) => {
                     return (
                         <AccordionContent key={subEach.id}>
-                            <Text>{subEach.nome_alimento}</Text>
+                            <Text>
+                                {subEach.nome_alimento ||
+                                    subEach.descricao_dos_alimentos}
+                            </Text>
                         </AccordionContent>
                     )
                 })}
@@ -62,7 +66,8 @@ function AccordionSubstitute({ alimento }) {
             {toggleAccordion &&
                 (
                     alimento.plano_alimentar_alimento_equivalentes ||
-                    alimento.pa_refeicao_substituta_alimento_equivalentes
+                    alimento.pa_refeicao_substituta_alimento_equivalentes ||
+                    alimento.pae_alimento_equivalentes
                 ).length == 0 && (
                     <AccordionContent>
                         <Text>Não há alimentos substitutos para esse.</Text>
